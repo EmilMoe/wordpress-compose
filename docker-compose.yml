@@ -49,3 +49,5 @@ services:
 networks:
   backend:
   bridge:
+    external:
+      name: bridge
