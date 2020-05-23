@@ -1,0 +1,51 @@
+version: "3.5"
+
+services:
+
+  database:
+    container_name: ${NAME}_database
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - ${DB_DATA}:/var/lib/mysql
+    networks:
+      - backend
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      
+  web:
+    container_name: ${NAME}_web
+    image: emilmoe/wordpress:latest
+    depends_on:
+      - database
+    links:
+      - database
+    restart: always
+    volumes:
+      - ${WP_DATA}:/var/www/html
+    networks:
+      - backend
+      - bridge
+    environment:
+      DB_NAME: wordpress
+      DB_USER: wordpress
+      DB_PASS: ${DB_PASS_PASSWORD}
+      DB_HOST: database
+      WP_URL: ${WP_DOMAIN}
+      WP_ADMIN: ${WP_USER}
+      WP_ADMIN_EMAIL: ${WP_EMAIL}
+      WP_ADMIN_PASS: ${WP_PASSWORD}
+      VIRTUAL_HOST: ${WP_DOMAINS}
+      LETSENCRYPT_HOST: ${WP_DOMAINS}
+      
+#  phpmyadmin:
+  
+#  backup:
+
+networks:
+  backend:
+  bridge:
